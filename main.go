@@ -104,15 +104,6 @@ func sendEmail(message string) {
 
 func main() {
 
-	// destination := flag.String("destination", "google.com", "URL and google.com by default")
-	// count := flag.Int("count", 10, "number of concurrent requestCount")
-	// //default is zero and will use an infinite loop
-	// loop := flag.Int("loop", 0, "number of iterations")
-
-	// flag.Parse()
-
-	// strCount := strconv.Itoa(*count)
-
 	//Initialize variables
 	destination := GetEnvVar("PING_DESTINATION", "google.com")
 	count := GetEnvVar("PING_COUNT", "10")

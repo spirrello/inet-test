@@ -6,6 +6,8 @@
 - Set ENV variables
 
 ```
+
+Examples:
 export SMTP_HOST="smtp.gmail.com"
 export SMTP_PORT="587"
 export SMTP_PASSWORD="asdfdsaf"
