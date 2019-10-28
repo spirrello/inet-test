@@ -14,4 +14,4 @@
 **/*.cfg
 **/*.tmp
 **/*.csr
-
+inet-test*
