@@ -48,15 +48,13 @@ func LogMessage(logLevel, message string) {
 func pingTest(destination string, count string) error {
 	log.Println("starting ping...")
 	cmd := exec.Command("ping", destination, "-c "+count)
-
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err := cmd.Run()
-	//cmd.Run()
 	output, errStr := string(stdout.Bytes()), string(stderr.Bytes())
-	//fmt.Printf("output:\n%s\nerr:\n%s\n", output, errStr)
 
+	//log errors and return
 	if err != nil {
 		LogMessage("ERROR", output+"\n"+errStr)
 		return err
