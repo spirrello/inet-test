@@ -122,7 +122,6 @@ func main() {
 
 			err := pingTest(destination, count)
 			if err != nil {
-
 				LogMessage("ERROR", err.Error())
 				sendEmail("ERROR sending pings")
 			}
