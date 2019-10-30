@@ -126,7 +126,7 @@ func sendEmail(message string) {
 }
 
 //parsePingTimeResult checks results for errors
-func parsePingTimeResult(pingResult string, err error) {
+func parsePingTestResult(pingResult string, err error) {
 
 	if err != nil {
 		LogMessage("ERROR", "pingResult:"+pingResult+" err:"+err.Error())
@@ -134,7 +134,7 @@ func parsePingTimeResult(pingResult string, err error) {
 		return
 	} else if pingResult != "0%" && pingResult != "0.0%" {
 		err = nil
-		LogMessage("ERROR", pingResult)
+		LogMessage("ERROR", "packet loss: "+pingResult)
 		sendEmail("packet loss: " + pingResult)
 		return
 	}
@@ -163,13 +163,13 @@ func main() {
 		for i := 0; i < loop; i++ {
 			//invoke pingTest and then parse results
 			pingResult, err := pingTest(destination, count)
-			parsePingTimeResult(pingResult, err)
+			parsePingTestResult(pingResult, err)
 		}
 	} else {
 		for {
 			//invoke pingTest and then parse results
 			pingResult, err := pingTest(destination, count)
-			parsePingTimeResult(pingResult, err)
+			parsePingTestResult(pingResult, err)
 			time.Sleep(5 * time.Second)
 		}
 	}
