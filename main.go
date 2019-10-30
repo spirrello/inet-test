@@ -45,7 +45,8 @@ func LogMessage(logLevel, message string) {
 
 //runCommand runs the ping test and greps appropriately for packet loss
 func runCommand(commandApp string, args []string) (string, string, error) {
-	log.Println(args)
+	log.Println(args[0])
+	log.Println(args[1])
 	cmd := exec.Command(commandApp, args...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -53,6 +54,7 @@ func runCommand(commandApp string, args []string) (string, string, error) {
 	err := cmd.Run()
 
 	if err != nil {
+		LogMessage("ERROR", "runCommand:"+string(stderr.Bytes()))
 		return "", "", err
 	}
 
@@ -66,14 +68,13 @@ func pingTest(destination string, count string) (string, error) {
 
 	var output, errStr, grepStr string
 	var err error
-	if runtime.GOOS == "OS darwin" {
+	if runtime.GOOS == "darwin" {
 		grepStr = " | grep loss | awk '{print $7}'"
-
 	} else {
 		grepStr = " | grep loss | awk '{print $6}'"
 	}
-
-	args := []string{destination, "-c " + count + grepStr}
+	fmt.Println(grepStr)
+	args := []string{destination, "-c " + count}
 	output, errStr, err = runCommand("ping", args)
 
 	//runCommand(destination, count, grepStr)
@@ -87,7 +88,7 @@ func pingTest(destination string, count string) (string, error) {
 
 	//log errors and return
 	if err != nil {
-		LogMessage("ERROR", errStr)
+		LogMessage("ERROR", "pingTest:"+errStr)
 		return "", err
 	}
 	// } else if strings.Contains(string(output), "timeout") {
@@ -152,10 +153,10 @@ func main() {
 			pingResult, err := pingTest(destination, count)
 			if err != nil {
 				LogMessage("ERROR", err.Error())
-				sendEmail("ERROR sending pings")
-			}
-			if pingResult != "0%" {
-				sendEmail("packet list: " + pingResult)
+				//sendEmail("ERROR sending pings")
+			} else if pingResult != "0%" {
+				LogMessage("ERROR", err.Error())
+				//sendEmail("packet loss: " + pingResult)
 			}
 		}
 	} else {
@@ -163,10 +164,10 @@ func main() {
 			pingResult, err := pingTest(destination, count)
 			if err != nil {
 				LogMessage("ERROR", err.Error())
-				sendEmail("ERROR sending pings")
+				//sendEmail("ERROR sending pings")
 			} else if pingResult != "0%" {
-				LogMessage("ERROR", err.Error())
-				sendEmail("packet loss: " + pingResult)
+				//LogMessage("ERROR", err.Error())
+				//sendEmail("packet loss: " + pingResult)
 			}
 			time.Sleep(5 * time.Second)
 		}
