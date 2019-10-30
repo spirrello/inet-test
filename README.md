@@ -1,4 +1,4 @@
-# App for testing packet loss using Go and sending email alerts
+# Test for packet loss and send email alerts using Go
 
 
 ## Requirements
