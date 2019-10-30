@@ -12,7 +12,7 @@ var pingTests = []struct {
 func TestPingTest(t *testing.T) {
 
 	for _, test := range pingTests {
-		if actual := pingTest(test.input, "10"); actual != nil {
+		if actual, err := pingTest(test.input, "10"); err != nil {
 			t.Errorf("pingTest(%q) = %q, expected nil",
 				test.input, actual)
 		}
