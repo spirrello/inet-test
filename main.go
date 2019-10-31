@@ -126,22 +126,22 @@ func sendEmail(message string) {
 }
 
 //parsePingTimeResult checks results for errors
-func parsePingTestResult(pingResult string, err error) {
+func parsePingTestResult(pingResult string, err error, packetLossPercentage float64) {
 
 	if err != nil {
 		LogMessage("ERROR", "pingResult:"+pingResult+" err:"+err.Error())
 		sendEmail("pingResult:" + pingResult + " err:" + err.Error())
 		return
 	} else if pingResult != "0%" && pingResult != "0.0%" {
-		//convert to int and check if packet loss is higher than 10% send email alerts
+		//convert to float and check if packet loss is higher than packetLossPercentage send email alerts
 		LogMessage("ERROR", "packet loss: "+pingResult)
 		pingResult = strings.Trim(pingResult, "%")
-		pingResultInt, intErr := strconv.ParseFloat(pingResult, 64)
+		pingResultInt, err := strconv.ParseFloat(pingResult, 64)
 
-		if intErr != nil {
-			LogMessage("ERROR", "coudln't convert pingResult: "+intErr.Error())
+		if err != nil {
+			LogMessage("ERROR", "coudln't convert pingResult: "+err.Error())
 			return
-		} else if pingResultInt >= 10 {
+		} else if pingResultInt >= packetLossPercentage {
 			sendEmail("packet loss: " + pingResult)
 			return
 		}
@@ -157,27 +157,37 @@ func main() {
 	//Initialize variables
 	destination := GetEnvVar("PING_DESTINATION", "google.com")
 	count := GetEnvVar("PING_COUNT", "10")
+	_, err := strconv.Atoi(count)
+	if err != nil {
+		log.Fatal("Need an integer for the PING_COUNT variable.")
+	}
 	loopStr := GetEnvVar("LOOP", "0")
 	loop, err := strconv.Atoi(loopStr)
 	if err != nil {
 		log.Fatal("Need an integer for the LOOP variable.")
 	}
+	packetLossPercentageStr := GetEnvVar("PACKET_LOSS_PERCENTAGE", "10")
+	packetLossPercentage, err := strconv.ParseFloat(packetLossPercentageStr, 64)
+	if err != nil || packetLossPercentage > 100 || packetLossPercentage < 0 {
+		log.Fatal("Need a digit between 1 and 100 for PACKET_LOSS_PERCENTAGE variable.")
+	}
 
 	fmt.Printf("\ncount:%s", count)
-	fmt.Printf("\ndestination:%s\n", destination)
+	fmt.Printf("\ndestination:%s", destination)
+	fmt.Printf("\nchecking for %v%% packet loss\n\n", packetLossPercentage)
 
 	//loop x number of times otherwise continue
 	if loop != 0 {
 		for i := 0; i < loop; i++ {
 			//invoke pingTest and then parse results
 			pingResult, err := pingTest(destination, count)
-			parsePingTestResult(pingResult, err)
+			parsePingTestResult(pingResult, err, packetLossPercentage)
 		}
 	} else {
 		for {
 			//invoke pingTest and then parse results
 			pingResult, err := pingTest(destination, count)
-			parsePingTestResult(pingResult, err)
+			parsePingTestResult(pingResult, err, packetLossPercentage)
 			time.Sleep(5 * time.Second)
 		}
 	}
