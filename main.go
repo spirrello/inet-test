@@ -133,13 +133,21 @@ func parsePingTestResult(pingResult string, err error) {
 		sendEmail("pingResult:" + pingResult + " err:" + err.Error())
 		return
 	} else if pingResult != "0%" && pingResult != "0.0%" {
-		err = nil
+		//convert to int and check if packet loss is higher than 10% send email alerts
 		LogMessage("ERROR", "packet loss: "+pingResult)
-		sendEmail("packet loss: " + pingResult)
-		return
+		pingResult = strings.Trim(pingResult, "%")
+		pingResultInt, intErr := strconv.ParseFloat(pingResult, 64)
+
+		if intErr != nil {
+			LogMessage("ERROR", "coudln't convert pingResult: "+intErr.Error())
+			return
+		} else if pingResultInt >= 10 {
+			sendEmail("packet loss: " + pingResult)
+			return
+		}
 	}
 
-	LogMessage("INFO", "packet loss: "+pingResult)
+	// LogMessage("INFO", "packet loss: "+pingResult)
 	return
 
 }
