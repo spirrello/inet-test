@@ -13,5 +13,6 @@ export SMTP_PORT="587"
 export SMTP_PASSWORD="asdfdsaf"
 export SENDER_EMAIL="asdfdsf@gmail.com"
 export DEST_EMAIL="asdfdasf@gmail.com"
+export PACKET_LOSS_PERCENTAGE=20
 ```
 
