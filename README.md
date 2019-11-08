@@ -16,3 +16,8 @@ export DEST_EMAIL="asdfdasf@gmail.com"
 export PACKET_LOSS_PERCENTAGE=20
 ```
 
+Compiling for Raspberry pi
+
+```
+env GOOS=linux GOARCH=arm GOARM=6 go build
+```
